@@ -77,10 +77,3 @@ Decisions will be made at the maintainers' discretion and with the goal of prote
 ## Attribution
 
 This Code of Conduct is adapted from the Contributor Covenant, version 2.1, available at https://www.contributor-covenant.org/version/2/1/code_of_conduct.html
-
----
-
-Maintainers:
-- @ruthviksharma-d
-
-If you maintain this repository, please replace [REPLACE WITH MAINTAINER EMAIL] with a real contact email for confidential reports.
