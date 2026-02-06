@@ -1,0 +1,322 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "9f33d9f0-2799-4d6b-8aea-a83b1cfe9823",
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "symbols",
+              "value": "[\"AAPL\", \"MSFT\", \"GOOGL\", \"TSLA\", \"AMZN\", \"NVDA\", \"META\", \"JPM\"]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9910a769-ad92-4310-8a8b-99f7c2c9fa41",
+      "name": "Define Stock Symbols",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2096,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "symbols",
+        "options": {}
+      },
+      "id": "496f88c8-8eb8-4fd2-83ab-c5f858d555df",
+      "name": "Split Stock Symbols",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $json.symbols }}?interval=1d&range=60d",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "05b6c5f7-aea8-4c54-9852-963bcac4ae16",
+      "name": "Fetch Real Stock Price",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2544,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "symbol",
+              "value": "={{ $('Split Stock Symbols').item.json.symbols }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "name",
+              "value": "={{ $json.chart.result[0].meta.longName || $json.chart.result[0].meta.shortName || $json.chart.result[0].meta.symbol }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "currentPrice",
+              "value": "={{ $json.chart.result[0].meta.regularMarketPrice }}",
+              "type": "number"
+            },
+            {
+              "id": "id-4",
+              "name": "previousClose",
+              "value": "={{ $json.chart.result[0].meta.chartPreviousClose }}",
+              "type": "number"
+            },
+            {
+              "id": "id-5",
+              "name": "priceChange",
+              "value": "={{ (($json.chart.result[0].meta.regularMarketPrice - $json.chart.result[0].meta.chartPreviousClose) / $json.chart.result[0].meta.chartPreviousClose * 100).toFixed(2) }}",
+              "type": "number"
+            },
+            {
+              "id": "id-8",
+              "name": "fiftyTwoWeekHigh",
+              "value": "={{ $json.chart.result[0].meta.fiftyTwoWeekHigh }}",
+              "type": "number"
+            },
+            {
+              "id": "id-9",
+              "name": "fiftyTwoWeekLow",
+              "value": "={{ $json.chart.result[0].meta.fiftyTwoWeekLow }}",
+              "type": "number"
+            },
+            {
+              "id": "id-10",
+              "name": "regularMarketVolume",
+              "value": "={{ $json.chart.result[0].meta.regularMarketVolume }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a3b0cb1c-1ed9-42aa-98d9-8a333334de66",
+      "name": "Extract Price Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2768,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/search?q={{ $('Split Stock Symbols').item.json.symbols }}+stock&hl=en-US&gl=US&ceid=US:en",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "988298d6-97a4-4888-aa3e-abf39d025112",
+      "name": "Fetch Stock News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2768,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "5593e7ec-f606-4808-a724-beb800b4c13d",
+      "name": "Merge Price and News",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2992,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "stocks",
+        "options": {}
+      },
+      "id": "7256b046-243c-4489-a56a-cfa4181f4ed1",
+      "name": "Aggregate All Recommendations",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3440,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\" />\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n<title>Stock Intelligence Dashboard</title>\n\n<style>\n:root {\n  --bg: #0b1020;\n  --panel: rgba(255,255,255,0.08);\n  --panel-border: rgba(255,255,255,0.12);\n  --text: #e5e7eb;\n  --muted: #9ca3af;\n\n  --buy: #22c55e;\n  --hold: #facc15;\n  --avoid: #ef4444;\n}\n\n* { box-sizing: border-box; }\n\nbody {\n  margin: 0;\n  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;\n  background:\n    radial-gradient(1200px 600px at 20% -10%, #1f2a5a 0%, transparent 60%),\n    radial-gradient(800px 500px at 90% 10%, #3b0764 0%, transparent 55%),\n    var(--bg);\n  color: var(--text);\n  min-height: 100vh;\n}\n\n.container {\n  max-width: 1500px;\n  margin: auto;\n  padding: 28px;\n}\n\n/* ---------- HEADER ---------- */\n.header {\n  position: sticky;\n  top: 0;\n  z-index: 5;\n  backdrop-filter: blur(14px);\n  background: linear-gradient(\n    to bottom,\n    rgba(11,16,32,0.9),\n    rgba(11,16,32,0.6)\n  );\n  border-bottom: 1px solid var(--panel-border);\n  padding: 20px 0 26px;\n  margin-bottom: 30px;\n}\n\n.header h1 {\n  font-size: 2.4rem;\n  margin: 0;\n  letter-spacing: -0.02em;\n}\n\n.header p {\n  margin-top: 6px;\n  color: var(--muted);\n  font-size: 0.95rem;\n}\n\n/* ---------- GRID ---------- */\n.grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));\n  gap: 22px;\n}\n\n/* ---------- CARD ---------- */\n.card {\n  background: linear-gradient(\n    180deg,\n    rgba(255,255,255,0.10),\n    rgba(255,255,255,0.04)\n  );\n  border: 1px solid var(--panel-border);\n  border-radius: 18px;\n  padding: 22px;\n  position: relative;\n  overflow: hidden;\n  transition: transform .25s ease, box-shadow .25s ease;\n}\n\n.card::before {\n  content: \"\";\n  position: absolute;\n  inset: 0;\n  background: radial-gradient(\n    300px 120px at top left,\n    rgba(255,255,255,0.10),\n    transparent 60%\n  );\n  opacity: 0;\n  transition: opacity .25s ease;\n}\n\n.card:hover {\n  transform: translateY(-6px);\n  box-shadow: 0 18px 50px rgba(0,0,0,0.45);\n}\n\n.card:hover::before {\n  opacity: 1;\n}\n\n/* ---------- CARD HEADER ---------- */\n.card-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  margin-bottom: 18px;\n}\n\n.stock-name {\n  font-size: 1.2rem;\n  font-weight: 700;\n}\n\n.stock-symbol {\n  font-size: 0.8rem;\n  color: var(--muted);\n  letter-spacing: 0.04em;\n}\n\n/* ---------- BADGE ---------- */\n.badge {\n  padding: 6px 14px;\n  border-radius: 999px;\n  font-size: 0.75rem;\n  font-weight: 700;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n}\n\n.badge.buy { background: rgba(34,197,94,0.18); color: var(--buy); }\n.badge.hold { background: rgba(250,204,21,0.18); color: var(--hold); }\n.badge.avoid { background: rgba(239,68,68,0.18); color: var(--avoid); }\n\n/* ---------- PRICE ---------- */\n.price {\n  font-size: 1.8rem;\n  font-weight: 800;\n  margin-bottom: 14px;\n}\n\n/* ---------- SCORE ---------- */\n.score-label {\n  font-size: 0.75rem;\n  color: var(--muted);\n  margin-bottom: 6px;\n}\n\n.score-bar {\n  height: 8px;\n  border-radius: 6px;\n  background: rgba(255,255,255,0.12);\n  overflow: hidden;\n  margin-bottom: 6px;\n}\n\n.score-fill {\n  height: 100%;\n  border-radius: 6px;\n  transition: width 1.2s ease;\n}\n\n.fill-buy { background: linear-gradient(90deg, #22c55e, #4ade80); }\n.fill-hold { background: linear-gradient(90deg, #facc15, #fde047); }\n.fill-avoid { background: linear-gradient(90deg, #ef4444, #f87171); }\n\n.score-value {\n  font-size: 0.9rem;\n  font-weight: 700;\n}\n\n/* ---------- METRICS ---------- */\n.metrics {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 10px;\n  margin: 16px 0;\n}\n\n.metric {\n  background: rgba(255,255,255,0.06);\n  border-radius: 10px;\n  padding: 10px 12px;\n}\n\n.metric-label {\n  font-size: 0.65rem;\n  color: var(--muted);\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n}\n\n.metric-value {\n  font-size: 1rem;\n  font-weight: 700;\n}\n\n/* ---------- REASON ---------- */\n.reason {\n  font-size: 0.85rem;\n  line-height: 1.55;\n  color: #d1d5db;\n  padding: 12px;\n  background: rgba(255,255,255,0.05);\n  border-radius: 10px;\n  border-left: 3px solid rgba(255,255,255,0.18);\n}\n\n/* ---------- FOOTER ---------- */\n.footer {\n  margin-top: 40px;\n  text-align: center;\n  color: var(--muted);\n  font-size: 0.75rem;\n}\n</style>\n</head>\n\n<body>\n<div class=\"container\">\n\n  <div class=\"header\">\n    <h1>📊 Stock Intelligence Dashboard</h1>\n    <p>AI-assisted signals • Technical + Sentiment • Educational Demo</p>\n  </div>\n\n  <div class=\"grid\">\n  {{ $json.stocks.map(stock => `\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <div>\n          <div class=\"stock-name\">${stock.name}</div>\n          <div class=\"stock-symbol\">${stock.symbol}</div>\n        </div>\n        <div class=\"badge ${stock.recommendation.toLowerCase()}\">\n          ${stock.recommendation}\n        </div>\n      </div>\n\n      <div class=\"price\">$${stock.currentPrice}</div>\n\n      <div class=\"score-label\">Overall Score</div>\n      <div class=\"score-bar\">\n        <div class=\"score-fill fill-${stock.recommendation.toLowerCase()}\"\n             style=\"width:${stock.overallScore}%\"></div>\n      </div>\n      <div class=\"score-value\">${stock.overallScore} / 100</div>\n\n      <div class=\"metrics\">\n        <div class=\"metric\">\n          <div class=\"metric-label\">Technical</div>\n          <div class=\"metric-value\">${stock.technicalScore}</div>\n        </div>\n        <div class=\"metric\">\n          <div class=\"metric-label\">Sentiment</div>\n          <div class=\"metric-value\">${stock.sentimentScore}</div>\n        </div>\n      </div>\n\n      <div class=\"reason\">\n        ${stock.reasoning}\n      </div>\n    </div>\n  `).join(\"\") }}\n  </div>\n\n  <div class=\"footer\">\n    ⚠️ Not financial advice • Demo system using public data & rule-based AI\n  </div>\n\n</div>\n</body>\n</html>"
+      },
+      "id": "1fb0beee-293d-4198-802f-c379fe46bb4b",
+      "name": "Generate Report",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        3664,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Extract stock data from input\nconst stockData = $input.item.json;\n\n// Parse news XML to extract headlines\nlet headlines = [];\ntry {\n  const newsXml = stockData.data || '';\n  const titleMatches = newsXml.match(/<title><!\\[CDATA\\[(.*?)\\]\\]><\\/title>/g) || [];\n  headlines = titleMatches.map(match => {\n    const content = match.match(/<title><!\\[CDATA\\[(.*?)\\]\\]><\\/title>/);\n    return content ? content[1] : '';\n  }).filter(h => h && !h.includes('Google News'));\n} catch (error) {\n  console.log('Error parsing news XML:', error);\n}\n\n// Sentiment analysis - count positive and negative keywords\nconst positiveKeywords = ['surge', 'gain', 'profit', 'growth', 'rise', 'up', 'bullish', 'strong', 'beat', 'record', 'high', 'success', 'positive', 'upgrade', 'buy', 'outperform'];\nconst negativeKeywords = ['fall', 'drop', 'loss', 'decline', 'down', 'bearish', 'weak', 'miss', 'low', 'concern', 'negative', 'downgrade', 'sell', 'underperform', 'risk', 'warning'];\n\nlet positiveCount = 0;\nlet negativeCount = 0;\n\nheadlines.forEach(headline => {\n  const lowerHeadline = headline.toLowerCase();\n  positiveKeywords.forEach(keyword => {\n    if (lowerHeadline.includes(keyword)) positiveCount++;\n  });\n  negativeKeywords.forEach(keyword => {\n    if (lowerHeadline.includes(keyword)) negativeCount++;\n  });\n});\n\n// Calculate sentiment score (0-100)\nconst totalSentiment = positiveCount + negativeCount;\nlet sentimentScore = 50; // neutral default\nif (totalSentiment > 0) {\n  sentimentScore = Math.round((positiveCount / totalSentiment) * 100);\n}\n\n// Calculate technical score based on price position and momentum\nconst priceRange = stockData.fiftyTwoWeekHigh - stockData.fiftyTwoWeekLow;\nconst pricePosition = (stockData.currentPrice - stockData.fiftyTwoWeekLow) / priceRange;\nconst pricePositionScore = Math.round(pricePosition * 60); // 0-60 points\n\n// Price change momentum score (0-40 points)\nlet momentumScore = 0;\nif (stockData.priceChange > 5) momentumScore = 40;\nelse if (stockData.priceChange > 2) momentumScore = 30;\nelse if (stockData.priceChange > 0) momentumScore = 20;\nelse if (stockData.priceChange > -2) momentumScore = 10;\nelse momentumScore = 0;\n\nconst technicalScore = Math.min(100, pricePositionScore + momentumScore);\n\n// Calculate overall score (weighted average: 60% technical, 40% sentiment)\nconst overallScore = Math.round((technicalScore * 0.6) + (sentimentScore * 0.4));\n\n// Determine recommendation based on overall score\nlet recommendation = 'HOLD';\nif (overallScore >= 70) recommendation = 'BUY';\nelse if (overallScore < 45) recommendation = 'AVOID';\n\n// Generate reasoning\nlet reasoning = `${stockData.name} is trading at $${stockData.currentPrice}, `;\nif (pricePosition > 0.7) {\n  reasoning += 'near its 52-week high, showing strong momentum. ';\n} else if (pricePosition < 0.3) {\n  reasoning += 'near its 52-week low, potentially undervalued. ';\n} else {\n  reasoning += 'in the middle of its 52-week range. ';\n}\n\nif (stockData.priceChange > 0) {\n  reasoning += `Recent price change of +${stockData.priceChange}% indicates positive momentum. `;\n} else {\n  reasoning += `Recent price change of ${stockData.priceChange}% shows weakness. `;\n}\n\nif (sentimentScore > 60) {\n  reasoning += 'News sentiment is predominantly positive.';\n} else if (sentimentScore < 40) {\n  reasoning += 'News sentiment is predominantly negative.';\n} else {\n  reasoning += 'News sentiment is neutral.';\n}\n\n// Return enriched stock data\nreturn {\n  symbol: stockData.symbol,\n  name: stockData.name,\n  currentPrice: stockData.currentPrice,\n  previousClose: stockData.previousClose,\n  priceChange: stockData.priceChange,\n  fiftyTwoWeekHigh: stockData.fiftyTwoWeekHigh,\n  fiftyTwoWeekLow: stockData.fiftyTwoWeekLow,\n  regularMarketVolume: stockData.regularMarketVolume,\n  technicalScore: technicalScore,\n  sentimentScore: sentimentScore,\n  overallScore: overallScore,\n  recommendation: recommendation,\n  reasoning: reasoning\n};"
+      },
+      "id": "35f754a5-fba8-4800-afbd-a80da7ffe1bc",
+      "name": "Analyze Stock Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3216,
+        272
+      ]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Define Stock Symbols",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define Stock Symbols": {
+      "main": [
+        [
+          {
+            "node": "Split Stock Symbols",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Stock Symbols": {
+      "main": [
+        [
+          {
+            "node": "Fetch Real Stock Price",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Stock News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Real Stock Price": {
+      "main": [
+        [
+          {
+            "node": "Extract Price Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Price Data": {
+      "main": [
+        [
+          {
+            "node": "Merge Price and News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Stock News": {
+      "main": [
+        [
+          {
+            "node": "Merge Price and News",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Price and News": {
+      "main": [
+        [
+          {
+            "node": "Analyze Stock Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate All Recommendations": {
+      "main": [
+        [
+          {
+            "node": "Generate Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Report": {
+      "main": [
+        []
+      ]
+    },
+    "Analyze Stock Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate All Recommendations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2b0b73a3d596d29e8d6b6ba4c4e61eda057966db7aa2a8ff8aac301469ccde59"
+  }
+}
