@@ -1,125 +1,215 @@
-# Contributing to My-own-photoshop-webapp-in-7-days
+# Contributing to Stock Analyzer
 
-Thank you for your interest in contributing! We welcome contributions of all kinds — bug reports, feature requests, documentation improvements, tests, and code. This document explains how to get started and the process we use to review and accept contributions.
+First off — thank you for your interest in contributing to Stock Analyzer! Your contributions (code, documentation, tests, bug reports, or ideas) help make this project better for everyone.
 
-## Table of Contents
-- How can I contribute?
-- Getting started (fork & clone)
-- Development setup
-- Coding conventions
-- Branching & Pull Requests
-- Commit messages
-- Running tests & linting
-- Submitting issues
-- Pull request checklist
-- Code of Conduct
-- License
-
-## How can I contribute?
-- Report bugs or request features by opening an issue.
-- Submit a fix or new feature via a pull request.
-- Improve documentation, examples, or the README.
-- Help with triage: label issues, reproduce bugs, answer questions.
-
-## Getting started
-1. Fork the repository on GitHub.
-2. Clone your fork:
-   - SSH: `git clone git@github.com:<your-username>/My-own-photoshop-webapp-in-7-days.git`
-   - HTTPS: `git clone https://github.com/<your-username>/My-own-photoshop-webapp-in-7-days.git`
-3. Add the upstream remote:
-   - `git remote add upstream https://github.com/ruthviksharma-d/My-own-photoshop-webapp-in-7-days.git`
-4. Create a branch for your work:
-   - `git checkout -b feat/short-description` or `git checkout -b fix/short-description`
-
-## Development setup
-This project is a web application. Typical steps (adjust to actual project tooling):
-
-- Install dependencies:
-  - `npm install` or `yarn install`
-- Start the dev server:
-  - `npm run dev` or `yarn dev`
-- Build for production:
-  - `npm run build` or `yarn build`
-- Run tests:
-  - `npm test` or `yarn test`
-
-If the project uses different commands or additional services (e.g., Docker), check the README for specific instructions. If no README instructions exist, open an issue or start a discussion so we can document the setup.
-
-## Coding conventions
-- Keep code readable and well-documented.
-- Follow the existing style. If you add new tooling (ESLint, Prettier), include config files and document how to run them.
-- Prefer small, focused commits that are easy to review.
-- Add or update tests for new functionality or bug fixes.
-- Write clear commit messages (see below).
-
-Recommended:
-- Use eslint + prettier (or the project's chosen linter/formatter).
-- Prefer modern JavaScript/TypeScript patterns consistent with the repository.
-
-## Branching & Pull Requests
-- Fork the repo and work in a branch named with the pattern `feat/` or `fix/` followed by a short description, e.g. `feat/image-crop`.
-- Rebase or pull the latest changes from `upstream/main` (or main branch) before opening a PR.
-- Push your branch to your fork and open a Pull Request against `ruthviksharma-d:main`.
-- In your PR description, describe:
-  - What you changed and why
-  - Any related issues (e.g., `Closes #123`)
-  - How to test or reproduce
-  - Screenshots if the change affects UI
-
-PRs will be reviewed by repository maintainers. Be responsive to review feedback and update your PR as requested.
-
-## Commit messages
-Use clear, imperative-style messages. Optionally follow Conventional Commits:
-
-- feat: add a new feature
-- fix: fix a bug
-- docs: documentation only changes
-- style: formatting, missing semi-colons, etc.
-- refactor: code changes that neither fixes a bug nor adds a feature
-- test: adding missing tests or correcting existing tests
-- chore: changes to the build process or auxiliary tools
-
-Example:
-```
-feat: add image-export feature (png, jpeg)
-
-- add export dialog
-- support quality slider
-- update README with usage
-```
-
-## Running tests & linting
-- Run the test suite locally before opening a PR: `npm test`
-- Run linter/formatter: `npm run lint` and `npm run format` (or project-specific commands)
-- Make sure all tests pass and lint errors are resolved
-
-## Submitting issues
-- Search issues to avoid duplicates.
-- Use a clear title and include steps to reproduce, expected vs actual behavior, environment (OS, browser, node version), and screenshots or logs if helpful.
-- Tag issues as `bug`, `enhancement`, `question`, etc., and include `good first issue` if you think it’s suitable for newcomers.
-
-## Pull request checklist
-Before requesting a review, please make sure:
-- [ ] You have read the Code of Conduct.
-- [ ] Your PR is against the `main` branch.
-- [ ] The changes are limited to a single purpose.
-- [ ] Tests are added/updated where applicable.
-- [ ] Linting and formatting pass.
-- [ ] Documentation/README updated if necessary.
-- [ ] All CI checks (if any) are passing.
-
-## Documentation & Examples
-If you add or change functionality, update the README or relevant docs with usage examples, configuration options, and any new commands or environment variables.
-
-## Questions or help
-If you're unsure where to start, check for issues labelled `help wanted` or `good first issue`. You can also open an issue to ask for guidance.
-
-## Code of Conduct
-This project follows the Contributor Covenant Code of Conduct. By participating, you agree to abide by its terms: see CODE_OF_CONDUCT.md.
-
-## License
-Contributions to this repository are subject to the repository's license. Please review the LICENSE file in the repository before contributing.
+This document explains how to report bugs, propose features, and submit changes so your contribution can be reviewed and merged quickly.
 
 ---
 
-Thanks again for helping improve this project — contributions keep open source projects alive and growing. If you have suggestions for improving this contribution guide, please open a pull request or an issue.
+## Table of contents
+
+- [Code of Conduct](#code-of-conduct)
+- [How to get help / ask questions](#how-to-get-help--ask-questions)
+- [Reporting bugs](#reporting-bugs)
+- [Suggesting improvements / feature requests](#suggesting-improvements--feature-requests)
+- [Before you start coding](#before-you-start-coding)
+  - [Set up a development environment](#set-up-a-development-environment)
+  - [Style & linters](#style--linters)
+  - [Branching and commit messages](#branching-and-commit-messages)
+- [How to submit a pull request (PR)](#how-to-submit-a-pull-request-pr)
+- [Testing](#testing)
+- [Data & privacy considerations](#data--privacy-considerations)
+- [Security issues](#security-issues)
+- [Maintainers & response time](#maintainers--response-time)
+- [Thanks!](#thanks)
+
+---
+
+## Code of Conduct
+
+We expect everyone participating in this project to follow a respectful, inclusive Code of Conduct. By participating, you agree to abide by it. If we don't already have a separate `CODE_OF_CONDUCT.md` file in the repo, please follow these basics:
+- Be respectful and patient.
+- Report harassment or abusive behavior privately to the maintainers.
+
+(If you'd like, we can add a full Contributor Covenant or a project-specific code of conduct.)
+
+---
+
+## How to get help / ask questions
+
+- Search existing issues first to see if your question has been asked.
+- For quick questions, open a new issue with the label `question` and include:
+  - A clear subject line
+  - Repro steps or a short code snippet
+  - Environment (OS, Python/Node/other version, Stock Analyzer version)
+
+---
+
+## Reporting bugs
+
+When filing a bug report, please include as much of the following as possible:
+
+- A descriptive title and a short summary.
+- Steps to reproduce the bug (minimal reproducible example if possible).
+- What you expected to happen and what actually happened.
+- Logs, stack traces, or screenshots (if applicable).
+- Environment information:
+  - OS and version
+  - Stock Analyzer version (commit/branch/tag)
+  - Language/runtime versions (e.g., Python 3.11, Node 18)
+  - Any relevant configuration (API keys removed)
+- If the bug is related to a dataset, include a small sample (dummy or synthetic) that reproduces the issue, not real/private data.
+
+Label your issue as `bug` and add the appropriate severity (e.g., `critical`, `major`, `minor`) if you can.
+
+---
+
+## Suggesting improvements / feature requests
+
+To propose a feature:
+- Open an issue titled “Feature: Short description”.
+- Explain:
+  - The problem you’re trying to solve.
+  - Why it matters and who benefits.
+  - A concrete proposal for how it might work (API, UI, CLI).
+  - Alternatives you considered.
+  - Any backward-compatibility concerns.
+
+If your feature is large, consider opening an RFC or design issue first so maintainers can provide early feedback.
+
+---
+
+## Before you start coding
+
+1. Check open issues for related work — you may want to comment that you're working on it.
+2. If your change is large or architectural, open a short design discussion issue first.
+
+### Set up a development environment
+
+Below are example steps. Adjust to match the repo's language/tooling.
+
+For a Python-based setup:
+```bash
+git clone https://github.com/<owner>/stock-analyzer.git
+cd stock-analyzer
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+For a Node/TypeScript setup:
+```bash
+git clone https://github.com/<owner>/stock-analyzer.git
+cd stock-analyzer
+npm install
+```
+
+(Replace `<owner>` with the repository owner.)
+
+### Style & linters
+
+- Follow the repository's existing formatting and style. If the repo uses:
+  - Python: use `black` and `flake8` or `ruff`.
+  - JS/TS: use `prettier` and `eslint`.
+- Run linters and formatters before opening a PR.
+
+### Branching and commit messages
+
+- Fork the repo (unless you have push access), then create a branch from `main`:
+  - `feature/<short-description>` for new features
+  - `fix/<issue-number>-short-description` for fixes
+  - `chore/<short>` for maintenance
+- Follow Conventional Commits for commit messages:
+  - Format: `type(scope?): subject`
+  - Examples:
+    - `feat(indicators): add MACD crossover detector`
+    - `fix(data): handle missing timestamps in CSV import`
+    - `docs: update contributing guide`
+
+Squash/fixup commits as appropriate before merge (maintainers may rebase).
+
+---
+
+## How to submit a pull request (PR)
+
+1. Fork and create a branch as described above.
+2. Make small, focused changes per PR.
+3. Add or update tests for new behavior.
+4. Update documentation where applicable.
+5. Push your branch to your fork and open a PR against `main` (or the branch specified by maintainers).
+6. In your PR description, include:
+   - A short summary of changes.
+   - Issue number (if applicable): `Closes #123`
+   - Steps to test / reproduction steps.
+   - Any migration steps or breaking changes.
+
+PR checklist (please tick before requesting review):
+- [ ] My code follows the repository style conventions
+- [ ] I added tests that prove my fix/feature works
+- [ ] I updated documentation (README, docs/) where applicable
+- [ ] All CI checks pass locally and on the PR
+- [ ] I linked the related issue(s)
+
+---
+
+## Testing
+
+- Run the test suite before opening a PR:
+  - Python example: `pytest`
+  - Node example: `npm test`
+- Aim for high coverage for new features. If a change is complex, include unit and integration tests.
+- If your change requires new test data, prefer synthetic or very small extracts, and do not commit proprietary data.
+
+---
+
+## Data & privacy considerations
+
+Stock Analyzer may process financial data. When contributing:
+- Do NOT commit API keys, credentials, or sensitive/private data.
+- Use environment variables or config files that are ignored by `.gitignore`.
+- If you add example datasets, ensure they are synthetic or anonymized and have appropriate licensing.
+- Document expected data schema and formats for any new data sources or ingesters.
+
+---
+
+## Security issues
+
+If you discover a security vulnerability, do NOT open a public issue. Contact the maintainers privately. You can:
+- Email: (add a maintainer email here)
+- Or open a GitHub Security Advisory if enabled.
+
+Please include steps to reproduce and potential impact.
+
+---
+
+## Maintainers & response time
+
+Primary maintainers:
+- @ruthviksharma-d
+
+We aim to respond to new issues and PRs within 3–7 business days. Larger changes may take longer due to review and testing.
+
+---
+
+## Licensing and contributor agreement
+
+By submitting a PR, you agree that your contributions will be licensed under the project's license (see `LICENSE`). If your employer requires a Contributor License Agreement (CLA), maintainers will provide one if needed.
+
+---
+
+## Large contributions & roadmap-aligned work
+
+If you plan to implement a major feature (architecture changes, new analysis engine, large refactor), please:
+1. Open a design/roadmap issue describing the approach.
+2. Tag it `design` or `proposal`.
+3. Wait for maintainer feedback before investing significant time.
+
+---
+
+## Thank you
+
+Thanks again for contributing! Your help improves the project for everyone. If you'd like help getting started, consider looking for issues labeled `good first issue` or `help wanted`.
+
+If you'd like, I can also:
+- create a ready-to-use PR template and issue templates for this repository,
+- or adapt this CONTRIBUTING.md with language-specific setup commands (Python, Node, etc.). Let me know which stack your project uses.
