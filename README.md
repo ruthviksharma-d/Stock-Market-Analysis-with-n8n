@@ -289,15 +289,6 @@ Runs **in parallel** with price fetching.
 This system is for **educational and informational purposes only**.
 It does **not** provide financial or investment advice.
 
----
-
-## 📂 Repository Structure (Suggested)
-
-```
-├── README.md
-├── workflow.png
-├── workflow.json
-└── docs/
-```
-
----
+<p align="center">
+  <i>Made with ❤️ by Ruthvik Sharma</i>
+</p>
